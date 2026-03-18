@@ -323,10 +323,11 @@ where
 
 		match result {
 			Some(Err(error)) => {
-				// Check if this is AlreadyImported — a race condition where
+				// No active view accepted the tx. Check if the error is
+				// AlreadyImported — this indicates a race where
 				// update_view_with_mempool() concurrently imported the tx from
-				// mempool into the active view(s) before we got here.
-				// In that case the tx IS in the pool, so return success.
+				// mempool into the view before we got here.
+				// The tx IS in the pool, so return success.
 				match error.into_pool_error() {
 					Ok(PoolError::AlreadyImported(_)) => {
 						trace!(
